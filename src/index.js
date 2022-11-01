@@ -24,8 +24,7 @@ function onInputChange(e) {
           `Too many matches found. Please enter a more specific name.`
         );
       } else if (setCounries.length === 1) {
-        console.log(setCounries);
-        return markupCountryInfo(setCounries);
+        return markupCountryInfo(...setCounries);
       } else {
         createMarkupList(setCounries);
       }
@@ -35,15 +34,15 @@ function onInputChange(e) {
       console.log('its errrrrror ' - err);
     });
 }
+// відображення вибраної країни
 function markupCountryInfo(countries) {
-  const markup = countries
-    .map(({ name, capital, population, flags, languages }) => {
-      return `<ul>
+  const { name, capital, population, flags, languages } = countries;
+  const markup = `<ul>
                 <li>
-                <img src="${flags.svg}” width=“30" height=“20” alt=“Flag of ${
-        name.official
-      }">
-                <h1>${name.official}</h1>
+                <img src=${flags.svg} width=50 height=35 alt="Flag of ${
+    name.official
+  }">
+                <h2>${name.official}</h2>
                 </li>
                 <li><p><span>Capital: </span>${capital[0]}</p></li>
                 <li><p><span>Population: </span>${population}</p></li>
@@ -51,22 +50,26 @@ function markupCountryInfo(countries) {
                   languages
                 )}</p></li>
             </ul>`;
-    })
-    .join('');
   infoCountry.innerHTML = markup;
 }
+
 // відображення списку країн
 function createMarkupList(setCounries) {
   const info = setCounries
     .map(
       ({ name: { official }, flags: { svg } }) =>
-        `
-        <li class='countries-item'>
-        <img src = “${svg}” alt = “flag” width = 40>
-        <p class=‘countries-title’>${official}</p>
+        `<li class='countries-item'>
+        <img src = "${svg}" alt = "flag" width = 40>
+        <p class="countries-title">${official}</p>
         </li>
         `
     )
     .join('');
   listCountry.insertAdjacentHTML('beforeend', info);
 }
+Notiflix.Notify.init({
+  width: '400px',
+  position: 'center-top',
+  distance: '110px',
+  timeout: 4000,
+});

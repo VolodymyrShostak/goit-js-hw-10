@@ -18,3 +18,11 @@ body {
   max-width: 320px;
   margin-bottom: 16px;
 }
+.countries-item {
+  font-style: italic;
+  font-weight: 500;
+}
+.countries-title {
+  margin-top: 0;
+  margin-bottom: 40px;
+}
