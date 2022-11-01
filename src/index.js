@@ -71,5 +71,5 @@ Notiflix.Notify.init({
   width: '400px',
   position: 'center-top',
   distance: '110px',
-  timeout: 4000,
+  timeout: 2000,
 });
