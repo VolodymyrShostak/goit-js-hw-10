@@ -14,19 +14,29 @@ inputField.addEventListener('input', debounce(onInputChange, DEBOUNCE_DELAY));
 function onInputChange(e) {
   infoCountry.innerHTML = '';
   listCountry.innerHTML = '';
-
-  fetchCountries(e.target.value).then(setCounries => {
-    return setCounries;
+  // запити на сервер по введених літерах
+  fetchCountries(e.target.value.trim()).then(setCounries => {
+    if (setCounries.length > 10) {
+      Notiflix.Notify.warning(
+        `Too many matches found. Please enter a more specific name.`
+      );
+      return setCounries;
+    }
+    createMarkupList(setCounries);
   });
 }
-function addCountryOnList(setCounries) {
-  return setCounries
-    .map(({ name, flags: { svg } }) => {
-      `<li class='country'>
-      <img src="${svg}" alt="" width="100">
-      <p class="name-countries">${name}</p>
-    </li>
-    `;
-    })
+// відображення списку країн
+function createMarkupList(setCounries) {
+  const info = setCounries
+    .map(
+      ({ name: { official }, flags: { svg } }) =>
+        `
+        <li class='countries-item'>
+        <img src = "${svg}" alt = "flag" width = 40>
+        <p class='countries-title'>${official}</p>
+        </li>
+        `
+    )
     .join('');
+  listCountry.insertAdjacentHTML('beforeend', info);
 }
