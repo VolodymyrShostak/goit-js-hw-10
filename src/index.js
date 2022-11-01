@@ -15,16 +15,44 @@ function onInputChange(e) {
   infoCountry.innerHTML = '';
   listCountry.innerHTML = '';
   // запити на сервер по введених літерах
-  fetchCountries(e.target.value.trim()).then(setCounries => {
-    if (setCounries.length > 10) {
-      Notiflix.Notify.warning(
-        `Too many matches found. Please enter a more specific name.`
-      );
-      return setCounries;
-    }
-    createMarkupList(setCounries);
-  });
+  fetchCountries(e.target.value.trim())
+    .then(
+      setCounries => {
+        if (setCounries.length > 10) {
+          Notiflix.Notify.warning(
+            `Too many matches found. Please enter a more specific name.`
+          );
+          return setCounries;
+        }
+        createMarkupList(setCounries);
+        if (setCounries.length !== 1) {
+          return setCounries;
+        }
+      },
+      function showSelektedCountry(setCounries) {
+        const selektedCountry = setCounries
+          .map(({ capital, languages, population }) => {
+            const leng = languages.map(el => {
+              return el.name;
+            });
+            return `
+<ul class="list-info">
+  <li class="list"><span class="name">Capital</span> - ${capital}</li>
+  <li class="list"><span class="name">Population</span> - ${population}</li>
+  <li class="list"><span class="name">Languages</span> - ${leng.join(', ')}</li>
+</ul>
+  `;
+          })
+          .join('');
+        infoCountry.insertAdjacentHTML('beforeend', selektedCountry);
+      }
+    )
+    .catch(err => {
+      Notiflix.Notify.failure('Oops, there is no country with that name');
+      console.log('its errrrrror - ', err);
+    });
 }
+
 // відображення списку країн
 function createMarkupList(setCounries) {
   const info = setCounries
