@@ -14,45 +14,47 @@ inputField.addEventListener('input', debounce(onInputChange, DEBOUNCE_DELAY));
 function onInputChange(e) {
   infoCountry.innerHTML = '';
   listCountry.innerHTML = '';
+  const query = e.target.value.trim();
+  if (!query.length) return;
   // запити на сервер по введених літерах
-  fetchCountries(e.target.value.trim())
-    .then(
-      setCounries => {
-        if (setCounries.length > 10) {
-          Notiflix.Notify.warning(
-            `Too many matches found. Please enter a more specific name.`
-          );
-          return setCounries;
-        }
+  fetchCountries(query)
+    .then(setCounries => {
+      if (setCounries.length > 10) {
+        return Notiflix.Notify.warning(
+          `Too many matches found. Please enter a more specific name.`
+        );
+      } else if (setCounries.length === 1) {
+        console.log(setCounries);
+        return markupCountryInfo(setCounries);
+      } else {
         createMarkupList(setCounries);
-        if (setCounries.length !== 1) {
-          return setCounries;
-        }
-      },
-      function showSelektedCountry(setCounries) {
-        const selektedCountry = setCounries
-          .map(({ capital, languages, population }) => {
-            const leng = languages.map(el => {
-              return el.name;
-            });
-            return `
-<ul class="list-info">
-  <li class="list"><span class="name">Capital</span> - ${capital}</li>
-  <li class="list"><span class="name">Population</span> - ${population}</li>
-  <li class="list"><span class="name">Languages</span> - ${leng.join(', ')}</li>
-</ul>
-  `;
-          })
-          .join('');
-        infoCountry.insertAdjacentHTML('beforeend', selektedCountry);
       }
-    )
+    })
     .catch(err => {
       Notiflix.Notify.failure('Oops, there is no country with that name');
-      console.log('its errrrrror - ', err);
+      console.log('its errrrrror ' - err);
     });
 }
-
+function markupCountryInfo(countries) {
+  const markup = countries
+    .map(({ name, capital, population, flags, languages }) => {
+      return `<ul>
+                <li>
+                <img src="${flags.svg}” width=“30" height=“20” alt=“Flag of ${
+        name.official
+      }">
+                <h1>${name.official}</h1>
+                </li>
+                <li><p><span>Capital: </span>${capital[0]}</p></li>
+                <li><p><span>Population: </span>${population}</p></li>
+                <li><p><span>Languages: </span>${Object.values(
+                  languages
+                )}</p></li>
+            </ul>`;
+    })
+    .join('');
+  infoCountry.innerHTML = markup;
+}
 // відображення списку країн
 function createMarkupList(setCounries) {
   const info = setCounries
@@ -60,8 +62,8 @@ function createMarkupList(setCounries) {
       ({ name: { official }, flags: { svg } }) =>
         `
         <li class='countries-item'>
-        <img src = "${svg}" alt = "flag" width = 40>
-        <p class='countries-title'>${official}</p>
+        <img src = “${svg}” alt = “flag” width = 40>
+        <p class=‘countries-title’>${official}</p>
         </li>
         `
     )
